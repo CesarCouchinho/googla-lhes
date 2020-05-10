@@ -1,49 +1,62 @@
-import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Client {
 
-	final static File folder = new File("src/news");
-	final static List<String> filesNamesList = new ArrayList<>(10);
+	private static String port = "1337";
 
+	ObjectOutputStream outToServer;
+	ObjectInputStream inFromServer;
+	Window window;
 
-	public Client() {
-		addFilesFromFolderToList(folder);
-	}
+	public void connectToServer() {
+		try {
+			
+			InetAddress host = InetAddress.getLocalHost();
+			Socket clientSocket = new Socket(host, Integer.parseInt(port));
+			
+			outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
+			inFromServer = new ObjectInputStream(clientSocket.getInputStream());
+			
+			window = new Window(this);
+			sendFilterToServer("");
 
-	public static void addFilesFromFolderToList(final File folder) {
-		for (final File fileEntry : folder.listFiles()) {
-			if (fileEntry.isDirectory()) {
-				addFilesFromFolderToList(fileEntry);
-			} else {
-				filesNamesList.add(fileEntry.getName());
+			while(true) {
+				
+				try {
+					List<String> filteredList = (List<String>) inFromServer.readObject();
+					
+					System.out.println("Client received from Server filtered list" + " (size: " +filteredList.size()+ ")");
+					
+					window.updateWindow(filteredList);
+					
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+				
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-//	public ArrayList<Integer> searchForKeyWordInFiles(String keyword) throws IOException {
-//		ArrayList<Integer> keywordMatchingIndexes = new ArrayList<Integer>();
-//
-//		int i = 0;
-//		for (String fileName : filesNamesList) {
-//			if (readArticleFromFileName2(fileName).contains(keyword)
-//					|| readHeaderFromFileName2(fileName).contains(keyword)) {
-//				keywordMatchingIndexes.add(i);
-//			}
-//			i++;
-//		}
-//		System.out.println(keywordMatchingIndexes.toString());
-//		return keywordMatchingIndexes;
-//	}
+	public void sendFilterToServer(String filter) {
+		try {
+			outToServer.writeObject(filter);
+			System.out.println("Client sent to server: " +filter);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		Client client = new Client();
-		new GraphicalUI(client);
+		client.connectToServer();
 	}
 
 }
-
-//TODO: fazer com que ele leia o que esta nas files denntro do diretorio. E seperar o titulo do resto do texto, por bold o titulo da noticia
