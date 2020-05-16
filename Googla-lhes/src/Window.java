@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -98,6 +99,7 @@ public class Window {
 		// Text Panel
 		JPanel textPanel = new JPanel();
 		JTextArea textArea = new JTextArea();
+		
 		jList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent arg0) {
@@ -105,9 +107,14 @@ public class Window {
 					if (jList.getSelectedIndex() >= 0) {
 						String content = currentFilteredList.get(jList.getSelectedIndex());
 				    	String lines[] = content.split("\\r?\\n");
-				    		
-						textArea.setText(lines[0] + "\n" + "\n"+ lines[1]);
-						
+			    		
+				    	try {
+				    		textArea.setText(lines[0] + "\n" + "\n" + lines[1]);
+				    	} catch (ArrayIndexOutOfBoundsException e) {
+				    		textArea.setText(lines[0]);
+				    	}
+				    	
+
 					} else {
 						textArea.setText("");
 					}
@@ -115,6 +122,7 @@ public class Window {
 			}
 		});
 
+		textArea.setEditable(false);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
 		JScrollPane textScroll = new JScrollPane(textArea);
@@ -123,14 +131,14 @@ public class Window {
 		return textPanel;
 	}
 
-	public void updateWindow(List<String> filteredList) {
+	public void updateWindow(Map <String,Integer> sortedByCountedMap) {
 		
 		currentFilteredList.clear();
-		for (String s: filteredList) {
-			currentFilteredList.add(s);
+		for (Map.Entry<String,Integer> entry: sortedByCountedMap.entrySet()) {
+			currentFilteredList.add(entry.getKey());
 		}
 		
-		new ReadFilteredList(filteredList, jList).execute();
+		new ReadFilteredList(sortedByCountedMap, jList).execute();
 		System.out.println("Window updated as requested");
 		newsTitlesModel.clear();
 	}

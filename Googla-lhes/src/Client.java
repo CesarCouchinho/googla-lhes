@@ -3,8 +3,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 public class Client {
 
@@ -23,28 +22,32 @@ public class Client {
 			outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
 			inFromServer = new ObjectInputStream(clientSocket.getInputStream());
 			
+//			outToServer.writeObject("client");
+			
 			window = new Window(this);
-			sendFilterToServer("");
 
 			while(true) {
-				
 				try {
-					List<String> filteredList = (List<String>) inFromServer.readObject();
+					Map <String,Integer> sortedByCountedMap = (Map <String,Integer>) inFromServer.readObject();
 					
-					System.out.println("Client received from Server filtered list" + " (size: " +filteredList.size()+ ")");
+					System.out.println("Client received from Server filtered list" + " (size: " +sortedByCountedMap.size()+ ")");
 					
-					window.updateWindow(filteredList);
+					window.updateWindow(sortedByCountedMap);
 					
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
-				
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+	
+	/** Sends the filter to server through object stream 
+	 * 
+	 * @param filter keyword to send to server
+	 */
 	public void sendFilterToServer(String filter) {
 		try {
 			outToServer.writeObject(filter);
@@ -54,6 +57,7 @@ public class Client {
 		}
 	}
 
+	
 	public static void main(String[] args) {
 		Client client = new Client();
 		client.connectToServer();
