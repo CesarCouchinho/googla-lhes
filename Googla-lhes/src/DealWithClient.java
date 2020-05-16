@@ -13,25 +13,20 @@ import java.util.stream.Collectors;
 
 public class DealWithClient extends Thread{
 
-	Server server;
 	private List <String> filesContentsList;
 	private List <String> filteredList = new ArrayList<>(10);
 	private Map <String,Integer> sortedByCount = new HashMap<String, Integer>();
 	ObjectInputStream inFromClient;
 	ObjectOutputStream outToClient;
+	int clientID;
 
 	
-	public DealWithClient(Socket socket, List <String> filesContentsList) {
+	public DealWithClient(Socket socket, List <String> filesContentsList, ObjectInputStream inFromClient, ObjectOutputStream outToClient, int clientID) {
 		System.out.println("DealWithClient thread created");
 		this.filesContentsList = filesContentsList;
-		
-		try {
-			inFromClient = new ObjectInputStream(socket.getInputStream());
-			outToClient = new ObjectOutputStream(socket.getOutputStream());	
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.inFromClient = inFromClient;
+		this.outToClient = outToClient;
+		this.clientID=clientID;
 	}
 
 	@Override
@@ -39,13 +34,13 @@ public class DealWithClient extends Thread{
 		try {
 			while (true) {
 				String filter = (String) inFromClient.readObject();
-				System.out.println("Server received from client: " + filter);
+				System.out.println("Server received from client " + clientID + ": " + filter);
 				
 				filterListByKeyword(filter);
 				sortListByKeywordOccurences(filteredList, filter);
 
 				outToClient.writeObject(sortedByCount);
-				System.out.println("Server sent to client filtered list by: " + filter + " (size: " + filteredList.size() + ")");
+				System.out.println("Server sent to client " + clientID + " filtered list by: " + filter + " (size: " + filteredList.size() + ")");
 
 				outToClient.reset();
 			}

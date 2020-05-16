@@ -15,25 +15,31 @@ public class Client {
 
 	public void connectToServer() {
 		try {
-			
+
 			InetAddress host = InetAddress.getLocalHost();
 			Socket clientSocket = new Socket(host, Integer.parseInt(port));
-			
+
 			outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
 			inFromServer = new ObjectInputStream(clientSocket.getInputStream());
-			
-//			outToServer.writeObject("client");
-			
+
+			outToServer.writeObject("client");
+
 			window = new Window(this);
 
-			while(true) {
+			while (true) {
 				try {
-					Map <String,Integer> sortedByCountedMap = (Map <String,Integer>) inFromServer.readObject();
-					
-					System.out.println("Client received from Server filtered list" + " (size: " +sortedByCountedMap.size()+ ")");
-					
-					window.updateWindow(sortedByCountedMap);
-					
+					Object o = inFromServer.readObject();
+					if (o instanceof Map<?, ?>) {
+						Map<String, Integer> sortedByCountedMap = (Map<String, Integer>) o;
+						window.updateWindow(sortedByCountedMap);
+						System.out.println("Client received from Server filtered list" + " (size: " + sortedByCountedMap.size() + ")");
+					} 
+					if (o instanceof String) {
+						String yo = (String) o;
+						System.out.println(yo);
+					}
+
+
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -43,21 +49,20 @@ public class Client {
 		}
 	}
 
-	
-	/** Sends the filter to server through object stream 
+	/**
+	 * Sends the filter to server through object stream
 	 * 
 	 * @param filter keyword to send to server
 	 */
 	public void sendFilterToServer(String filter) {
 		try {
 			outToServer.writeObject(filter);
-			System.out.println("Client sent to server: " +filter);
+			System.out.println("Client sent to server: " + filter);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	
 	public static void main(String[] args) {
 		Client client = new Client();
 		client.connectToServer();
