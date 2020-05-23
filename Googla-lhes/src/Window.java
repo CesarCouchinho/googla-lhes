@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -99,26 +100,25 @@ public class Window {
 		// Text Panel
 		JPanel textPanel = new JPanel();
 		JTextArea textArea = new JTextArea();
-		
+
 		jList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent arg0) {
 				if (!arg0.getValueIsAdjusting()) {
 					if (jList.getSelectedIndex() >= 0) {
 						String content = currentFilteredList.get(jList.getSelectedIndex());
-				    	String lines[] = content.split("\\r?\\n");
-			    		
-				    	try {
-				    		textArea.setText(lines[0] + "\n" + "\n" + lines[1]);
-				    	} catch (ArrayIndexOutOfBoundsException e) {
-				    		textArea.setText(lines[0]);
-				    	}
-				    	
+						String lines[] = content.split("\\r?\\n");
+
+						try {
+							textArea.setText(lines[0] + "\n" + "\n" + lines[1]);
+						} catch (ArrayIndexOutOfBoundsException e) {
+							textArea.setText(lines[0]);
+						}
 
 					} else {
 						textArea.setText("");
 					}
-				} 
+				}
 			}
 		});
 
@@ -131,13 +131,13 @@ public class Window {
 		return textPanel;
 	}
 
-	public void updateWindow(Map <String,Integer> sortedByCountedMap) {
-		
+	public void updateWindow(Map<String, Integer> sortedByCountedMap) {
+
 		currentFilteredList.clear();
-		for (Map.Entry<String,Integer> entry: sortedByCountedMap.entrySet()) {
+		for (Map.Entry<String, Integer> entry : sortedByCountedMap.entrySet()) {
 			currentFilteredList.add(entry.getKey());
 		}
-		
+
 		new ReadFilteredList(sortedByCountedMap, jList).execute();
 		System.out.println("Window updated as requested");
 		newsTitlesModel.clear();
