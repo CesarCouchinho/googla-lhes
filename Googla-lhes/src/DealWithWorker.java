@@ -1,20 +1,16 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DealWithWorker extends Thread {
 
-	Server server;
-	ObjectInputStream inFromWorker;
-	ObjectOutputStream outToWorker;
-	int workerID;
-	Task currentTask;
+	private Server server;
+	private ObjectInputStream inFromWorker;
+	private ObjectOutputStream outToWorker;
+	private int workerID;
+	private Task currentTask;
 
-	public DealWithWorker(Server server, Socket socket, ObjectInputStream inFromWorker, ObjectOutputStream outToWorker,
-			int id) {
+	public DealWithWorker(Server server, ObjectInputStream inFromWorker, ObjectOutputStream outToWorker, int id) {
 		System.out.println("DealWithWorker thread created");
 		this.server = server;
 		this.inFromWorker = inFromWorker;
@@ -39,7 +35,7 @@ public class DealWithWorker extends Thread {
 
 			}
 		} catch (IOException e) {
-			System.out.println("Connection ended by Worker");
+			System.out.println("Connection ended by Worker" + workerID);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}

@@ -2,6 +2,7 @@ import java.util.LinkedList;
 
 public class TasksQueue {
 
+	@SuppressWarnings("rawtypes")
 	private LinkedList tasksQueue = new LinkedList();
 	private int max;
 
@@ -9,6 +10,7 @@ public class TasksQueue {
 		max = numberOfTasks;
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized void put(Task task) {
 		while (tasksQueue.size() == max) {
 			try {
@@ -27,7 +29,6 @@ public class TasksQueue {
 			try {
 				System.out.println("Queue empty, waiting...");
 				wait();
-
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

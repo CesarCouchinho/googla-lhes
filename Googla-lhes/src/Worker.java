@@ -9,15 +9,18 @@ import java.util.regex.Pattern;
 public class Worker {
 
 	private static String port = "1337";
-
-	ObjectOutputStream outToServer;
-	ObjectInputStream inFromServer;
+	private ObjectOutputStream outToServer;
+	private ObjectInputStream inFromServer;
 	
+	
+	/** Connects to server
+	 * 
+	 */
 	public void connectToServer() {
+		Socket workerSocket;
 		try {
-			
 			InetAddress host = InetAddress.getLocalHost();
-			Socket workerSocket = new Socket(host, Integer.parseInt(port));
+			workerSocket = new Socket(host, Integer.parseInt(port));
 			
 			outToServer = new ObjectOutputStream(workerSocket.getOutputStream());
 			inFromServer = new ObjectInputStream(workerSocket.getInputStream());
@@ -42,6 +45,11 @@ public class Worker {
 		}
 	}
 	
+	
+	/** Execute the task, meaning, search in 'content' the number of times 'filter' occurs
+	 * 
+	 * @param task
+	 */
 	public void executeTask(Task task) {
 		String content = task.content;
 		String filter = task.filter;
@@ -57,7 +65,7 @@ public class Worker {
 	}
 	
 	
-	/** counts the number of times a keyword (filter) occurs in a given string (content)
+	/** Counts the number of times a keyword (filter) occurs in a given string (content)
 	 * 
 	 * @param content: the string 
 	 * @param filter: keyword to count how many times it occurs in the string

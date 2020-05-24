@@ -5,12 +5,11 @@ import java.net.Socket;
 
 public class DealWithClient extends Thread{
 
-	Server server;
-	ObjectInputStream inFromClient;
-	ObjectOutputStream outToClient;
-	int clientID;
+	private Server server;
+	private ObjectInputStream inFromClient;
+	public ObjectOutputStream outToClient;
+	private int clientID;
 
-	
 	public DealWithClient(Server server, Socket socket, ObjectInputStream inFromClient, ObjectOutputStream outToClient, int clientID) {
 		System.out.println("DealWithClient thread created");
 		this.server = server;
@@ -28,17 +27,11 @@ public class DealWithClient extends Thread{
 
 				server.createTasks(filter, clientID);
 
-//				server.sendFilterToWorker(filter);
-//				System.out.println("Server sent to workers " + ": " + filter);
-
-				
-				while (server.tasksCompleted != server.numberOfFiles) {
+				while (server.tasksCompleted != server.getNumberOfFiles()) {
 					System.out.print("");
 				}
-				server.sortAndSendMapToClient();
-
+				server.sendSortedMapToClient();
 				outToClient.reset();
-
 			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

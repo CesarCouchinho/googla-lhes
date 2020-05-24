@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -21,12 +20,12 @@ import javax.swing.event.ListSelectionListener;
 
 public class Window {
 
-	Client client;
+	private Client client;
 	private JTextField searchText = new JTextField(15);
-	List<String> currentFilteredList = new ArrayList<>(700);
-	DefaultListModel<String> newsTitlesModel;
+	private List<String> currentFilteredList = new ArrayList<>(700);
+	private DefaultListModel<String> newsTitlesModel;
 	@SuppressWarnings("rawtypes")
-	JList jList;
+	private JList jList;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Window(Client client) {
@@ -54,6 +53,11 @@ public class Window {
 		frame.setVisible(true);
 	}
 
+	
+	/** Creates button and adds an action listener to it
+	 * 
+	 * @return created button
+	 */
 	public JButton createButton() {
 		JButton button = new JButton("Search");
 		button.addActionListener(new ActionListener() {
@@ -68,6 +72,11 @@ public class Window {
 		return button;
 	}
 
+	
+	/** Creates the NORTH part of the layout, with the search bar and button
+	 * 
+	 * @return
+	 */
 	private JPanel createTextFieldAndButtonPanel() {
 		JPanel searchPanel = new JPanel();
 		FlowLayout searchPanelLayout = new FlowLayout();
@@ -78,14 +87,13 @@ public class Window {
 		return searchPanel;
 	}
 
-	@SuppressWarnings("rawtypes")
-	private JList createJList() {
-		@SuppressWarnings("unchecked")
-		JList list = new JList(newsTitlesModel);
-		list.setVisibleRowCount(6);
-		return list;
-	}
-
+	
+	/** Creates the WEST part of the layout, with the list where the news' titles are shown
+	 * 
+	 * @param width
+	 * @param height
+	 * @return created panel
+	 */
 	private JPanel createNewsTitleSidePanel(int width, int height) {
 		// Titles Panel
 		JPanel titlesPanel = new JPanel();
@@ -96,6 +104,13 @@ public class Window {
 		return titlesPanel;
 	}
 
+	
+	/** Creates the EAST part of the layout, with the list where the news' articles are shown
+	 * Also adds a listener to the JList for what news entry is being selected, in order to show the correct article for it
+	 * @param width
+	 * @param height
+	 * @return created panel
+	 */
 	private JPanel createNewsArticlesSidePanel(int width, int height) {
 		// Text Panel
 		JPanel textPanel = new JPanel();
@@ -114,7 +129,6 @@ public class Window {
 						} catch (ArrayIndexOutOfBoundsException e) {
 							textArea.setText(lines[0]);
 						}
-
 					} else {
 						textArea.setText("");
 					}
@@ -131,6 +145,12 @@ public class Window {
 		return textPanel;
 	}
 
+	
+	/** Updates window
+	 * 
+	 * @param sortedByCountedMap
+	 */
+	@SuppressWarnings("unchecked")
 	public void updateWindow(Map<String, Integer> sortedByCountedMap) {
 
 		currentFilteredList.clear();

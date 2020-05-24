@@ -2,8 +2,9 @@ import java.io.Serializable;
 
 public class Task implements Serializable{
 
-	String content;
-	String filter;
+	private static final long serialVersionUID = 1L;
+	public String content;
+	public String filter;
 
 	public Task(String content, String filter) {
 		this.content = content;
